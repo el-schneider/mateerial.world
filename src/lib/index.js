@@ -1,1 +1,3 @@
-// Reexport your entry components here
+import { useMatcapTexture } from "./useMatcapTexture";
+
+export { useMatcapTexture };

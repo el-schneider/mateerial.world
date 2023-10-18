@@ -1,3 +1,18 @@
-<h1>Welcome to your library project</h1>
-<p>Create your package using @sveltejs/package and preview/showcase your work with SvelteKit</p>
-<p>Visit <a href="https://kit.svelte.dev">kit.svelte.dev</a> to read the documentation</p>
+<script lang="ts">
+	import { Canvas } from '@threlte/core';
+	import Scene from './Scene.svelte';
+</script>
+
+<div>
+	<Canvas>
+		<Scene />
+	</Canvas>
+</div>
+
+<style>
+	div {
+		width: 100%;
+		height: 100vh;
+		background: red;
+	}
+</style>
