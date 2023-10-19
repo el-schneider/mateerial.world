@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import { T } from '@threlte/core';
+	import { T, useThrelte } from '@threlte/core';
 	import { GLTF, OrbitControls, useGltf } from '@threlte/extras';
 
 	import { useMatcapTexture } from '$lib/useMatcapTexture.js';
@@ -20,10 +20,11 @@
 
 	rollDice();
 
-	const depth = 5;
+	const depth = 15;
 	const cols = 5;
 	const rows = 5;
 	const distance = 5;
+	const offset = 0;
 </script>
 
 <script lang="ts">
@@ -39,9 +40,9 @@
 
 	$: console.log('normalMap:', normalMap);
 	$: console.log('numTot:', numTot);
-</script>
 
-<CustomRenderer />
+	const { scene } = useThrelte();
+</script>
 
 <T.PerspectiveCamera
 	makeDefault
@@ -53,19 +54,33 @@
 	<OrbitControls enableDamping />
 </T.PerspectiveCamera>
 
-<T.Group position.x={((cols - 1) * distance) / 2} position.y={((rows - 1) * distance) / 2}>
+<T.Fog
+	color={'red'}
+	near={(depth / 2 - distance) * distance}
+	far={(depth / 2) * distance}
+	on:create={({ ref }) => {
+		scene.fog = ref;
+	}}
+/>
+
+<T.Group
+	position.x={((cols - 1) * distance) / 2}
+	position.y={((rows - 1) * distance) / 2}
+	position.z={((depth - 1) * distance) / 2}
+>
 	{#if $cube}
 		{#each Array(cols) as _, col}
 			{#each Array(rows) as _, row}
 				{#each Array(depth) as _, depth}
-					{@const index = depth * cols + col}
+					{@const matcapId = offset + row + depth * cols + (col % matcapCount)}
+					{@const normalId = (offset + (col * rows + col)) % normalCount}
 					<T.Mesh
 						geometry={$cube.nodes['Cube'].geometry}
 						position.x={-col * distance}
 						position.y={-row * distance}
 						position.z={-depth * distance}
 					>
-						<MatcapMaterial matcapId={index % matcapCount} normalId={index % normalCount} />
+						<MatcapMaterial {matcapId} {normalId} />
 					</T.Mesh>
 				{/each}
 			{/each}

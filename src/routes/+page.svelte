@@ -3,9 +3,9 @@
 	import Scene, { rollDice } from './Scene.svelte';
 </script>
 
-<header>
+<!-- <header>
 	<button on:click={rollDice}>Roll Dice</button>
-</header>
+</header> -->
 
 <div>
 	<Canvas>
