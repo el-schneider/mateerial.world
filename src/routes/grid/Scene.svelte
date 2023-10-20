@@ -1,11 +1,11 @@
 <script context="module" lang="ts">
 	import { T, useThrelte } from '@threlte/core';
-	import { writable } from 'svelte/store';
-	import { OrbitControls, interactivity, useGltf } from '@threlte/extras';
-	import { generateColorsInRange } from './utils';
-	import { tweened } from 'svelte/motion';
+	import { OrbitControls, Text, interactivity, useGltf } from '@threlte/extras';
 	import { expoInOut } from 'svelte/easing';
-	import { tick } from 'svelte';
+	import { tweened } from 'svelte/motion';
+	import { writable } from 'svelte/store';
+	import { Vector3 } from 'three';
+	import { generateColorsInRange } from './utils';
 
 	const size = 11;
 	const spacing = 5;
@@ -23,7 +23,7 @@
 	const palette = generateColorsInRange(size * size * size);
 
 	// TODO make this more robust
-	export const offset = writable(100000);
+	export const offset = writable(new Vector3(100000, 100000, 100000));
 </script>
 
 <script lang="ts">
@@ -33,7 +33,7 @@
 
 	const duration = 500;
 
-	const offsetMatcaps = tweened(0, {
+	const matcapTransition = tweened(0, {
 		duration,
 		easing: expoInOut
 	});
@@ -46,18 +46,22 @@
 
 	let transitioning = false;
 
-	const transitionMatcap = async (off: number) => {
+	let matcapTransitionVector = new Vector3(0, 0, 0);
+
+	const transitionMatcap = async (transition: Vector3) => {
 		if (transitioning) return;
+		matcapTransitionVector = transition.clone().multiplyScalar(spacing);
+
 		// currentMatcapOffset = currentMatcapOffset + Math.abs(offset);
 
 		transitioning = true;
 
-		offsetMatcaps.set(0, { duration: 0 });
-		offsetMatcaps.set(-off, { duration });
+		matcapTransition.set(0, { duration: 0 });
+		matcapTransition.set(-1, { duration });
 
 		setTimeout(() => {
-			offsetMatcaps.set(0, { duration: 0 });
-			$offset = $offset - off;
+			matcapTransition.set(0, { duration: 0 });
+			$offset = $offset.add(transition);
 			transitioning = false;
 		}, duration);
 	};
@@ -65,10 +69,10 @@
 	const handleKeyUp = (e) => {
 		switch (e.key) {
 			case 'ArrowLeft':
-				transitionMatcap(-1);
+				transitionMatcap(new Vector3(-1, 0, 0));
 				break;
 			case 'ArrowRight':
-				transitionMatcap(1);
+				transitionMatcap(new Vector3(1, 0, 0));
 				break;
 			default:
 				break;
@@ -112,31 +116,45 @@
 />
 
 <T.Group
-	position.x={((size - 1) * spacing) / 2 + $offsetMatcaps * spacing}
-	position.y={((size - 1) * spacing) / 2}
-	position.z={((size - 1) * spacing) / 2}
+	position.x={((size - 1) * spacing) / 2 + $matcapTransition * matcapTransitionVector.x}
+	position.y={((size - 1) * spacing) / 2 + $matcapTransition * matcapTransitionVector.y}
+	position.z={((size - 1) * spacing) / 2 + $matcapTransition * matcapTransitionVector.z}
 >
 	{#if $cube}
 		{#each matcapsArray as _, x}
 			{#each Array(size) as _, y}
 				{#each normalsArray as _, z}
-					{@const index = $offset * size * size + x * size * size + y * size + z}
+					{@const index = Math.abs(
+						(-$offset.x * size * size +
+							x * size * size +
+							-$offset.y * size +
+							y * size +
+							-$offset.z +
+							z) %
+							(size * size * size)
+					)}
 					{@const color = palette[index % palette.length]}
 					<!-- {@const normalId = x * size + x} -->
-					<T.Mesh
-						geometry={$cube.nodes['Cube'].geometry}
-						position.x={-x * spacing}
-						position.y={-y * spacing}
-						position.z={-z * spacing}
-						on:click={(e) => {
-							e.stopPropagation();
-							const offset = Math.floor(size / 2) - x;
-							transitionMatcap(offset);
-							console.log('offset:', offset);
-						}}
-					>
-						<T.MeshStandardMaterial emissive={color} />
-					</T.Mesh>
+					<T.Group position.x={-x * spacing} position.y={-y * spacing} position.z={-z * spacing}>
+						<T.Mesh
+							geometry={$cube.nodes['Cube'].geometry}
+							on:click={(e) => {
+								e.stopPropagation();
+								const center = Math.floor(size / 2);
+								transitionMatcap(new Vector3(center - x, center - y, center - z));
+								console.log('matcapTransitionVector:', matcapTransitionVector);
+							}}
+						>
+							<T.MeshStandardMaterial emissive={color} />
+						</T.Mesh>
+						<Text
+							anchorY={'middle'}
+							anchorX={'center'}
+							fontSize={0.5}
+							position.z={1.1}
+							text={'' + index}
+						/>
+					</T.Group>
 				{/each}
 			{/each}
 		{/each}
