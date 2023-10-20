@@ -1,15 +1,15 @@
 <script context="module" lang="ts">
 	import { T, useThrelte } from '@threlte/core';
 	import { writable } from 'svelte/store';
-	import { OrbitControls, useGltf } from '@threlte/extras';
+	import { OrbitControls, interactivity, useGltf } from '@threlte/extras';
 	import { generateColorsInRange } from './utils';
 	import { tweened } from 'svelte/motion';
 	import { expoInOut } from 'svelte/easing';
 	import { tick } from 'svelte';
 
-	const size = 10;
+	const size = 11;
 	const spacing = 5;
-	const DEBUG = true;
+	const DEBUG = false;
 
 	for (let r = 0; r < size; r++) {
 		for (let g = 0; g < size; g++) {
@@ -27,6 +27,8 @@
 </script>
 
 <script lang="ts">
+	interactivity();
+
 	const cube = useGltf('/models/rounded_cube.glb');
 
 	const duration = 500;
@@ -42,8 +44,13 @@
 
 	const { scene } = useThrelte();
 
+	let transitioning = false;
+
 	const transitionMatcap = async (off: number) => {
+		if (transitioning) return;
 		// currentMatcapOffset = currentMatcapOffset + Math.abs(offset);
+
+		transitioning = true;
 
 		offsetMatcaps.set(0, { duration: 0 });
 		offsetMatcaps.set(-off, { duration });
@@ -51,20 +58,31 @@
 		setTimeout(() => {
 			offsetMatcaps.set(0, { duration: 0 });
 			$offset = $offset - off;
+			transitioning = false;
 		}, duration);
+	};
+
+	const handleKeyUp = (e) => {
+		switch (e.key) {
+			case 'ArrowLeft':
+				transitionMatcap(-1);
+				break;
+			case 'ArrowRight':
+				transitionMatcap(1);
+				break;
+			default:
+				break;
+		}
 	};
 
 	$: console.log('$offset:', $offset);
 </script>
 
-<svelte:window
-	on:keyup={(e) =>
-		(e.key === 'ArrowRight' && transitionMatcap(1)) ||
-		(e.key === 'ArrowLeft' && transitionMatcap(-1))}
-/>
+<svelte:window on:keyup={handleKeyUp} />
 
 <T.PerspectiveCamera
 	makeDefault
+	fov={75}
 	position={!DEBUG ? [0, 0, 4] : [size * spacing, size * spacing, size * spacing]}
 	on:create={({ ref }) => {
 		ref.lookAt(0, 0, 0);
@@ -110,6 +128,12 @@
 						position.x={-x * spacing}
 						position.y={-y * spacing}
 						position.z={-z * spacing}
+						on:click={(e) => {
+							e.stopPropagation();
+							const offset = Math.floor(size / 2) - x;
+							transitionMatcap(offset);
+							console.log('offset:', offset);
+						}}
 					>
 						<T.MeshStandardMaterial emissive={color} />
 					</T.Mesh>
