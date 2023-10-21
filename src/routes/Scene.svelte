@@ -1,7 +1,8 @@
 <script context="module" lang="ts">
 	import { T, useThrelte } from '@threlte/core';
 	import { OrbitControls, Suspense } from '@threlte/extras';
-	import Grid, { SIZE, SPACING } from './Grid.svelte';
+	import Grid from './Grid.svelte';
+	import { SIZE, SPACING } from './state';
 
 	const DEBUG = false;
 </script>
@@ -9,7 +10,9 @@
 <script lang="ts">
 	export let bgColor = '#000000';
 
-	const { scene } = useThrelte();
+	const { scene, renderer } = useThrelte();
+
+	$: renderer.setClearColor(bgColor);
 </script>
 
 <T.PerspectiveCamera

@@ -6,8 +6,11 @@
 
 	import { Suspense } from '@threlte/extras';
 	import { writable, type Writable } from 'svelte/store';
-	import { currentMaterial, transitionMatcap } from './Grid.svelte';
+
 	import { Vector3 } from 'three';
+	import { transitionMatcap } from './Grid.svelte';
+	import { currentMaterial } from './state';
+
 	export const suspense: Writable<'loading' | 'error' | 'done'> = writable('loading');
 
 	let index = 0;
@@ -19,9 +22,9 @@
 	let bgColor: Color = '#000000';
 </script>
 
-<header class="fixed inset-0 bottom-auto flex flex-row">
-	<button on:click={() => transitionMatcap(new Vector3(0, 0, -100))}>+</button>
-	<button on:click={() => transitionMatcap(new Vector3(0, 0, 100))}>-</button>
+<header class="fixed inset-0 bottom-auto flex flex-row pointer-events-none">
+	<!-- <button on:click={() => transitionMatcap(new Vector3(0, 0, -100))}>+</button>
+	<button on:click={() => transitionMatcap(new Vector3(0, 0, 100))}>-</button> -->
 	<div class="text-white font-display text-4xl">
 		<div>Matcap: {$currentMaterial[0]}</div>
 		<div>Normal: {$currentMaterial[1]}</div>
@@ -31,7 +34,7 @@
 			<button
 				on:click={() => (bgColor = bgColors[i])}
 				style="background: {color};"
-				class="w-6 h-6 inline-block"
+				class="w-6 h-6 inline-block pointer-events-auto"
 			/>
 		{/each}
 	</div>
