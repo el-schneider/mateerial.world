@@ -22,13 +22,21 @@
 	let bgColor: Color = '#000000';
 </script>
 
-<header class="fixed inset-0 bottom-auto flex flex-row pointer-events-none">
+<header
+	class="fixed inset-0 top-auto md:top-0 md:bottom-auto flex flex-row items-end md:items-start pointer-events-none p-1"
+>
 	<!-- <button on:click={() => transitionMatcap(new Vector3(0, 0, -100))}>+</button>
 	<button on:click={() => transitionMatcap(new Vector3(0, 0, 100))}>-</button> -->
 	<div class="text-white font-display text-4xl">
 		<div>Matcap: {$currentMaterial[0]}</div>
 		<div>Normal: {$currentMaterial[1]}</div>
 	</div>
+	<div
+		class="fixed top-0 left-1/2 -translate-x-1/2 text-white font-display text-4xl flex-[] text-center"
+	>
+		material.world
+	</div>
+
 	<div class="ml-auto">
 		{#each bgColors as color, i}
 			<button
@@ -40,7 +48,7 @@
 	</div>
 </header>
 
-<div class="h-screen">
+<div class="h-screen select-none touch-pan-x touch-pan-y">
 	{#if $suspense === 'loading'}
 		<LoadingScreen />
 	{/if}
@@ -56,3 +64,12 @@
 		</Suspense>
 	</Canvas>
 </div>
+
+<footer
+	class="fixed top-0 md:top-auto md:bottom-0 text-white font-display p-1 text-right w-full -rotate-90 origin-top-right -ml-8 md:rotate-0 md:ml-0"
+>
+	code by <a href="https://github.com/el-schneider/mateerial.world" target="_blank" rel="noopener"
+		>el-schneider</a
+	>
+	made with <a href="https://threlte.xyz" target="_blank">threlte</a>
+</footer>
