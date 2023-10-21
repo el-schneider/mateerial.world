@@ -17,7 +17,7 @@
 <div
 	class="fixed top-0 left-1/2 -translate-x-1/2 text-white font-display text-4xl flex-[] text-center p-1"
 >
-	material.world
+	mateerial.world
 </div>
 
 <slot />
