@@ -12,7 +12,7 @@ export const DEFAULT_TRANSITION_DURATION = 500;
 export const NORMAL_COUNT = 77;
 export const MATCAP_COUNT = 642;
 
-export const MATERIAL_TUPLES = generateTuples(642, 77);
+export const MATERIAL_TUPLES = shuffle(generateTuples(642, 77));
 
 export const currentMaterial = derived(page, ($page) => $page.params.catchall.split('/') || [0, 0]);
 
