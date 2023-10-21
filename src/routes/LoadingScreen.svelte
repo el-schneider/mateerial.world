@@ -1,14 +1,1 @@
-<div>loading</div>
-
-<style>
-	div {
-		position: fixed;
-		inset: 0;
-		background: transparent;
-		background: black;
-		color: #fff;
-		display: flex;
-		justify-content: center;
-		align-items: center;
-	}
-</style>
+<div class="fixed inset-0 bg-black text-white flex items-center justify-center">loading</div>

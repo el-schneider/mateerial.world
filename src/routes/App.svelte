@@ -6,7 +6,7 @@
 
 	import { Suspense } from '@threlte/extras';
 	import { writable, type Writable } from 'svelte/store';
-	import { transitionMatcap } from './Grid.svelte';
+	import { currentMaterial, transitionMatcap } from './Grid.svelte';
 	import { Vector3 } from 'three';
 	export const suspense: Writable<'loading' | 'error' | 'done'> = writable('loading');
 
@@ -19,21 +19,25 @@
 	let bgColor: Color = '#000000';
 </script>
 
-<header>
+<header class="fixed inset-0 bottom-auto flex flex-row">
 	<button on:click={() => transitionMatcap(new Vector3(0, 0, -100))}>+</button>
 	<button on:click={() => transitionMatcap(new Vector3(0, 0, 100))}>-</button>
-	<div id="matNumber">
-		{index}
+	<div class="text-white font-display text-4xl">
+		<div>Matcap: {$currentMaterial[0]}</div>
+		<div>Normal: {$currentMaterial[1]}</div>
 	</div>
-	{#each bgColors as color, i}
-		<button
-			on:click={() => (bgColor = bgColors[i])}
-			style="background: {color}; width: 12px; height: 12px; display: inline-block; border: 0;"
-		/>
-	{/each}
+	<div class="ml-auto">
+		{#each bgColors as color, i}
+			<button
+				on:click={() => (bgColor = bgColors[i])}
+				style="background: {color};"
+				class="w-6 h-6 inline-block"
+			/>
+		{/each}
+	</div>
 </header>
 
-<div>
+<div class="h-screen">
 	{#if $suspense === 'loading'}
 		<LoadingScreen />
 	{/if}
@@ -45,23 +49,7 @@
 			on:error={() => ($suspense = 'error')}
 			on:suspend={() => ($suspense = 'loading')}
 		>
-			<Scene />
+			<Scene {bgColor} />
 		</Suspense>
 	</Canvas>
 </div>
-
-<style>
-	header {
-		position: fixed;
-	}
-
-	#matNumber {
-		display: inline-block;
-		width: 40px;
-	}
-
-	div {
-		width: 100%;
-		height: 100vh;
-	}
-</style>
