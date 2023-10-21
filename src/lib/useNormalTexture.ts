@@ -6,10 +6,12 @@ type Settings = {
 	repeat?: number[];
 	anisotropy?: number;
 	offset?: number[];
-	normalRoot?: string;
+	root?: string;
+	listUrl?: string;
 };
 
-const LIST_URL = 'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master/normals/normals.json';
+const DEFAULT_LIST_URL =
+	'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master/normals/normals.json';
 const DEFAULT_NORMAL_ROOT =
 	'https://rawcdn.githack.com/pmndrs/drei-assets/7a3104997e1576f83472829815b00880d88b32fb/normals';
 
@@ -22,7 +24,8 @@ export const useNormalTexture = (
 		repeat = [1, 1],
 		anisotropy = 1,
 		offset = [0, 0],
-		normalRoot = DEFAULT_NORMAL_ROOT
+		root = DEFAULT_NORMAL_ROOT,
+		listUrl = DEFAULT_LIST_URL
 	} = settings;
 
 	const loader = useLoader(TextureLoader, options);
@@ -31,14 +34,14 @@ export const useNormalTexture = (
 	const resultStore = asyncWritable(
 		(async () => {
 			const normalsList = await cache.remember(async () => {
-				const res = await fetch(LIST_URL);
+				const res = await fetch(listUrl);
 				return await res.json();
 			}, ['normals']);
 
 			const numTot = Object.keys(normalsList).length;
 			const DEFAULT_NORMAL = normalsList[0];
 			const imageName = normalsList[id] || DEFAULT_NORMAL;
-			const url = `${normalRoot}/${imageName}`;
+			const url = `${root}/${imageName}`;
 
 			const map = await loader.load(url);
 

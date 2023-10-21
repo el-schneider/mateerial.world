@@ -24,7 +24,8 @@ function getFormatString(format: number) {
 
 type Settings = {
 	format?: 64 | 128 | 256 | 512 | 1024;
-	matcapRoot?: string;
+	root?: string;
+	listUrl?: string;
 };
 
 const LIST_URL = 'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master/matcaps.json';
@@ -37,7 +38,7 @@ export const useMatcapTexture = (
 	options?: UseLoaderOptions<TextureLoader> &
 		Parameters<ReturnType<typeof useLoader<typeof TextureLoader>>['load']>[1]
 ) => {
-	const { format = 256, matcapRoot = DEFAULT_MATCAP_ROOT } = settings;
+	const { format = 256, root = DEFAULT_MATCAP_ROOT, listUrl = LIST_URL } = settings;
 
 	const { renderer } = useThrelte();
 	const loader = useLoader(TextureLoader, {
@@ -60,7 +61,7 @@ export const useMatcapTexture = (
 	const resultStore = asyncWritable(
 		(async () => {
 			const matcapList = await cache.remember(async () => {
-				const matcapListResponse = await fetch(LIST_URL);
+				const matcapListResponse = await fetch(listUrl);
 				return (await matcapListResponse.json()) as Record<string, string>;
 			}, ['matcaps']);
 
@@ -68,7 +69,7 @@ export const useMatcapTexture = (
 			const defaultMatcap = matcapList[0];
 			const fileHash = typeof id === 'string' ? id : matcapList[id];
 			const fileName = `${fileHash || defaultMatcap}${getFormatString(format)}.png`;
-			const url = `${matcapRoot}/${format}/${fileName}`;
+			const url = `${root}/${format}/${fileName}`;
 
 			const map = await loader.load(url);
 

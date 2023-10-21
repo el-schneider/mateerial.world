@@ -1,5 +1,5 @@
 <script context="module" lang="ts">
-	import { useMatcapTexture } from '$lib';
+	import { useMatcapTexture, useNormalTexture } from '$lib';
 	import {
 		T,
 		asyncWritable,
@@ -15,7 +15,6 @@
 	import { Vector3 } from 'three';
 	import MatcapNormalMaterial from './MatcapNormalMaterial.svelte';
 	import { generateColorsInRange, generateTuples } from './utils';
-	import { useNormalTexture } from '$lib/useNormalTexture';
 
 	const size = 11;
 	const spacing = 5;
@@ -27,8 +26,6 @@
 	const palette = generateColorsInRange(size * size);
 
 	const matcapTuples = generateTuples(642, 77);
-
-	console.log('matcapTuples:', matcapTuples);
 
 	// TODO make this more robust
 	export const lastCursor = writable(new Vector3(0, 0, 0));
@@ -98,7 +95,7 @@
 			return await Promise.all(
 				Array(641)
 					.fill({})
-					.map((_, i) => useMatcapTexture(i, { format: 128, normalRoot: '/textures/matcaps' }))
+					.map((_, i) => useMatcapTexture(i, { format: 128, root: '/textures/matcaps' }))
 			);
 		})()
 	);
@@ -108,7 +105,7 @@
 			return await Promise.all(
 				Array(77)
 					.fill({})
-					.map((_, i) => useNormalTexture(i, { repeat: [5, 5], normalRoot: '/textures/normals' }))
+					.map((_, i) => useNormalTexture(i, { repeat: [5, 5], root: '/textures/normals' }))
 			);
 		})()
 	);
