@@ -1,7 +1,8 @@
 <script lang="ts">
 	import { Canvas } from '@threlte/core';
-	import Scene, { transitionMatcap } from './Scene.svelte';
 	import { Vector3 } from 'three';
+	import { transitionMatcap } from './Grid.svelte';
+	import Scene from './Scene.svelte';
 
 	let index = 0;
 

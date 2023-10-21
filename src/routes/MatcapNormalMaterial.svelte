@@ -2,7 +2,7 @@
 	import { T } from '@threlte/core';
 
 	import { getContext } from 'svelte';
-	import type { TexturesContext } from './Scene.svelte';
+	import type { TexturesContext } from './Grid.svelte';
 </script>
 
 <script lang="ts">
