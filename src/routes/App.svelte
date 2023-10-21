@@ -31,11 +31,6 @@
 		<div>Matcap: {$currentMaterial[0]}</div>
 		<div>Normal: {$currentMaterial[1]}</div>
 	</div>
-	<div
-		class="fixed top-0 left-1/2 -translate-x-1/2 text-white font-display text-4xl flex-[] text-center"
-	>
-		material.world
-	</div>
 
 	<div class="ml-auto">
 		{#each bgColors as color, i}
@@ -47,6 +42,15 @@
 		{/each}
 	</div>
 </header>
+
+<footer
+	class="fixed top-0 md:top-auto md:bottom-0 text-white p-1 text-right w-full -rotate-90 origin-top-right -ml-8 md:rotate-0 md:ml-0"
+>
+	code by <a href="https://github.com/el-schneider/mateerial.world" target="_blank" rel="noopener"
+		>el-schneider</a
+	>
+	made with <a href="https://threlte.xyz" target="_blank">threlte</a>
+</footer>
 
 <div class="h-screen select-none touch-pan-x touch-pan-y">
 	{#if $suspense === 'loading'}
@@ -64,12 +68,3 @@
 		</Suspense>
 	</Canvas>
 </div>
-
-<footer
-	class="fixed top-0 md:top-auto md:bottom-0 text-white font-display p-1 text-right w-full -rotate-90 origin-top-right -ml-8 md:rotate-0 md:ml-0"
->
-	code by <a href="https://github.com/el-schneider/mateerial.world" target="_blank" rel="noopener"
-		>el-schneider</a
-	>
-	made with <a href="https://threlte.xyz" target="_blank">threlte</a>
-</footer>
