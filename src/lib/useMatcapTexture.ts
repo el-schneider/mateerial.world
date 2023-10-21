@@ -1,6 +1,11 @@
-import { useCache, useLoader, type UseLoaderOptions } from '@threlte/core';
-import { derived, get, writable, type Writable } from 'svelte/store';
-import { type Texture, TextureLoader } from 'three';
+import {
+	asyncWritable,
+	useCache,
+	useLoader,
+	useThrelte,
+	type UseLoaderOptions
+} from '@threlte/core';
+import { TextureLoader, type Texture } from 'three';
 
 function getFormatString(format: number) {
 	switch (format) {
@@ -17,48 +22,59 @@ function getFormatString(format: number) {
 	}
 }
 
-export function useMatcapTexture(
-	id: number | string = 0,
-	format: 64 | 128 | 256 | 512 | 1024 = 256,
-	options?: UseLoaderOptions<TextureLoader>
-) {
-	const matcapRoot =
-		'https://rawcdn.githack.com/emmelleppi/matcaps/9b36ccaaf0a24881a39062d05566c9e92be4aa0d';
-	const listUrl = 'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master/matcaps.json';
+type Settings = {
+	format?: 64 | 128 | 256 | 512 | 1024;
+	matcapRoot?: string;
+};
 
-	const matcapTexture: Writable<Texture | null> = writable(null);
-	const url = writable('');
-	const numTot = writable(0);
-	const loader = useLoader(TextureLoader, options);
+const LIST_URL = 'https://cdn.jsdelivr.net/gh/pmndrs/drei-assets@master/matcaps.json';
+const DEFAULT_MATCAP_ROOT =
+	'https://rawcdn.githack.com/emmelleppi/matcaps/9b36ccaaf0a24881a39062d05566c9e92be4aa0d';
+
+export const useMatcapTexture = (
+	id: number | string = 0,
+	settings: Settings = {},
+	options?: UseLoaderOptions<TextureLoader> &
+		Parameters<ReturnType<typeof useLoader<typeof TextureLoader>>['load']>[1]
+) => {
+	const { format = 256, matcapRoot = DEFAULT_MATCAP_ROOT } = settings;
+
+	const { renderer } = useThrelte();
+	const loader = useLoader(TextureLoader, {
+		...options,
+		transform: (res: Texture) => {
+			if ('colorSpace' in res) {
+				// >= r152
+				res.colorSpace = renderer.outputColorSpace;
+			} else {
+				// < r152
+				(res as any).encoding = (renderer as any).outputEncoding;
+			}
+			res.needsUpdate = true;
+			return options?.transform?.(res) ?? res;
+		}
+	});
 
 	const cache = useCache();
 
-	async function load() {
-		const matcapList = await cache.remember(async () => {
-			const matcapListResponse = await fetch(listUrl);
-			return (await matcapListResponse.json()) as Record<string, string>;
-		}, ['matcaps']);
+	const resultStore = asyncWritable(
+		(async () => {
+			const matcapList = await cache.remember(async () => {
+				const matcapListResponse = await fetch(LIST_URL);
+				return (await matcapListResponse.json()) as Record<string, string>;
+			}, ['matcaps']);
 
-		numTot.set(Object.keys(matcapList).length);
+			const numTot = Object.keys(matcapList).length;
+			const defaultMatcap = matcapList[0];
+			const fileHash = typeof id === 'string' ? id : matcapList[id];
+			const fileName = `${fileHash || defaultMatcap}${getFormatString(format)}.png`;
+			const url = `${matcapRoot}/${format}/${fileName}`;
 
-		const defaultMatcap = matcapList[0];
-		const fileHash = typeof id === 'string' ? id : matcapList[id];
-		const fileName = `${fileHash || defaultMatcap}${getFormatString(format)}.png`;
-		const urlString = `${matcapRoot}/${format}/${fileName}`;
-		url.set(urlString);
+			const map = await loader.load(url);
 
-		const texture = await loader.load(get(url));
-		matcapTexture.set(texture);
-	}
-
-	load();
-
-	const derivedTexture = derived(
-		[matcapTexture, url, numTot],
-		([$matcapTexture, $url, $numTot]) => {
-			return { map: $matcapTexture, url: $url, numTot: $numTot };
-		}
+			return { map, url, numTot };
+		})()
 	);
 
-	return derivedTexture;
-}
+	return resultStore;
+};
