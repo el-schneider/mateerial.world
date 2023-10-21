@@ -7,7 +7,7 @@
 		useThrelte,
 		type AsyncWritable
 	} from '@threlte/core';
-	import { interactivity, useGltf } from '@threlte/extras';
+	import { interactivity, useGltf, useSuspense } from '@threlte/extras';
 	import { setContext } from 'svelte';
 	import { expoInOut } from 'svelte/easing';
 	import { tweened } from 'svelte/motion';
@@ -90,36 +90,42 @@
 
 	$: renderer.setClearColor(bgColor);
 
-	const matcapTextures = asyncWritable(
-		(async () => {
-			return await Promise.all(
-				Array(641)
-					.fill({})
-					.map((_, i) =>
-						useMatcapTexture(i, {
-							format: 128,
-							root: '/textures/matcaps',
-							listUrl: '/textures/matcaps/matcaps.json'
-						})
-					)
-			);
-		})()
+	const suspend = useSuspense();
+
+	const matcapTextures = suspend(
+		asyncWritable(
+			(async () => {
+				return await Promise.all(
+					Array(641)
+						.fill({})
+						.map((_, i) =>
+							useMatcapTexture(i, {
+								format: 128,
+								root: '/textures/matcaps',
+								listUrl: '/textures/matcaps/matcaps.json'
+							})
+						)
+				);
+			})()
+		)
 	);
 
-	const normalTextures = asyncWritable(
-		(async () => {
-			return await Promise.all(
-				Array(77)
-					.fill({})
-					.map((_, i) =>
-						useNormalTexture(i, {
-							repeat: [5, 5],
-							root: '/textures/normals',
-							listUrl: '/textures/normals/normals.json'
-						})
-					)
-			);
-		})()
+	const normalTextures = suspend(
+		asyncWritable(
+			(async () => {
+				return await Promise.all(
+					Array(77)
+						.fill({})
+						.map((_, i) =>
+							useNormalTexture(i, {
+								repeat: [5, 5],
+								root: '/textures/normals',
+								listUrl: '/textures/normals/normals.json'
+							})
+						)
+				);
+			})()
+		)
 	);
 
 	setContext('textures', { matcapTextures, normalTextures });

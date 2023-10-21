@@ -1,6 +1,6 @@
 <script context="module" lang="ts">
 	import { T, useThrelte } from '@threlte/core';
-	import { OrbitControls } from '@threlte/extras';
+	import { OrbitControls, Suspense } from '@threlte/extras';
 	import Grid, { SIZE, SPACING } from './Grid.svelte';
 
 	const DEBUG = false;
