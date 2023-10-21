@@ -95,7 +95,13 @@
 			return await Promise.all(
 				Array(641)
 					.fill({})
-					.map((_, i) => useMatcapTexture(i, { format: 128, root: '/textures/matcaps' }))
+					.map((_, i) =>
+						useMatcapTexture(i, {
+							format: 128,
+							root: '/textures/matcaps',
+							listUrl: '/textures/matcaps/matcaps.json'
+						})
+					)
 			);
 		})()
 	);
@@ -105,7 +111,13 @@
 			return await Promise.all(
 				Array(77)
 					.fill({})
-					.map((_, i) => useNormalTexture(i, { repeat: [5, 5], root: '/textures/normals' }))
+					.map((_, i) =>
+						useNormalTexture(i, {
+							repeat: [5, 5],
+							root: '/textures/normals',
+							listUrl: '/textures/normals/normals.json'
+						})
+					)
 			);
 		})()
 	);
