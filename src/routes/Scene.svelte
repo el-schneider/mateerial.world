@@ -20,7 +20,7 @@
 		ref.lookAt(0, 0, 0);
 	}}
 >
-	<OrbitControls enableDamping />
+	<OrbitControls enableDamping enablePan={DEBUG} enableZoom={DEBUG} />
 </T.PerspectiveCamera>
 
 {#if !DEBUG}
