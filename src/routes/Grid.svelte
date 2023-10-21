@@ -53,10 +53,7 @@
 				(pos.z - offset.z)
 		);
 
-		// const center = Math.floor(size / 2);
-		// const centerVector = new Vector3(center, center, center);
-
-		// if (centerVector.equals(pos)) {
+		// if (CENTER.equals(pos)) {
 		// 	const current = MATERIAL_TUPLES[index % MATERIAL_TUPLES.length];
 		// 	goto(`/${current[0]}/${current[1]}`);
 		// }
@@ -80,10 +77,10 @@
 			matcapTransition.set(0, { duration: 0 });
 			const last = get(lastCursor);
 
-			console.log('last:', last);
+			// console.log('last:', last);
 
 			const index = calcIndex(last.clone().add(CENTER), transition, SIZE);
-			console.log('index:', index);
+			// console.log('index:', index);
 
 			goto(
 				`/${MATERIAL_TUPLES[index % MATERIAL_TUPLES.length][0]}/${
@@ -91,9 +88,9 @@
 				}`
 			);
 
-			// cursor.set(last.clone().add(transition));
+			cursor.set(last.clone().add(transition));
 
-			// lastCursor.set(get(cursor));
+			lastCursor.set(get(cursor));
 
 			transitioning = false;
 		}, duration);
@@ -190,13 +187,13 @@
 								<!-- <T.MeshStandardMaterial emissive={color} /> -->
 								<MatcapNormalMaterial matcapId={tuple[0]} normalId={tuple[1]} />
 							</T.Mesh>
-							<Text
+							<!-- <Text
 								anchorY={'middle'}
 								anchorX={'center'}
 								fontSize={0.5}
 								position.z={1.01}
 								text={'' + index}
-							/>
+							/> -->
 						</T.Group>
 					{/each}
 				{/each}
