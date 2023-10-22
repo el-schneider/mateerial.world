@@ -1,58 +1,9 @@
-# create-svelte
+# mateerial.world
 
-Everything you need to build a Svelte library, powered by [`create-svelte`](https://github.com/sveltejs/kit/tree/master/packages/create-svelte).
+`mateerial.world` is a showcase for the [useMatcapTexture](https://github.com/pmndrs/drei#usematcaptexture) and [useNormalTexture](https://github.com/pmndrs/drei#usenormaltexture) hooks I ported from [drei](https://github.com/pmndrs/drei).
 
-Read more about creating a library [in the docs](https://kit.svelte.dev/docs/packaging).
+I created it as a submission for the 2023 [Threlte Warp Hackathon](https://threlte.xyz/hackathon).
 
-## Creating a project
+This platform enables playful exploration of materials by providing access to all possible combinations of the 642 Matcaps and 77 Normal maps (49,434 combinations in total) sourced from [nidorx/matcaps](https://github.com/nidorx/matcaps) and [emmelleppi/normal-maps](https://github.com/emmelleppi/normal-maps).
 
-If you're seeing this, you've probably already done this step. Congrats!
-
-```bash
-# create a new project in the current directory
-npm create svelte@latest
-
-# create a new project in my-app
-npm create svelte@latest my-app
-```
-
-## Developing
-
-Once you've created a project and installed dependencies with `npm install` (or `pnpm install` or `yarn`), start a development server:
-
-```bash
-npm run dev
-
-# or start the server and open the app in a new browser tab
-npm run dev -- --open
-```
-
-Everything inside `src/lib` is part of your library, everything inside `src/routes` can be used as a showcase or preview app.
-
-## Building
-
-To build your library:
-
-```bash
-npm run package
-```
-
-To create a production version of your showcase app:
-
-```bash
-npm run build
-```
-
-You can preview the production build with `npm run preview`.
-
-> To deploy your app, you may need to install an [adapter](https://kit.svelte.dev/docs/adapters) for your target environment.
-
-## Publishing
-
-Go into the `package.json` and give your package the desired name through the `"name"` option. Also consider adding a `"license"` field and point it to a `LICENSE` file which you can create from a template (one popular option is the [MIT license](https://opensource.org/license/mit/)).
-
-To publish your library to [npm](https://www.npmjs.com):
-
-```bash
-npm publish
-```
+Eventually, I aim to submit them as a pull request to [@threlte/extras](https://github.com/threlte/extras). The project is currently a bit chaotic, but, as for everyone, time just slipped away.
